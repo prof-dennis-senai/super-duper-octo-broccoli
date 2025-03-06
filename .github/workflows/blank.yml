@@ -1,33 +1,46 @@
-# This is a basic workflow to help you get started with Actions
-
 name: CI
 
-# Controls when the workflow will run
 on:
-  # Triggers the workflow on push or pull request events but only for the "main" branch
   push:
-    branches: [ "main" ]
+    branches: ["main"]
   pull_request:
-    branches: [ "main" ]
-
-  # Allows you to run this workflow manually from the Actions tab
+    branches: ["main"]
   workflow_dispatch:
 
-# A workflow run is made up of one or more jobs that can run sequentially or in parallel
 jobs:
-  # This workflow contains a single job called "build"
-  build:
-    name: Olaaaaaaa!
-    # The type of runner that the job will run on
+  test:
+    name: Executar Testes
     runs-on: self-hosted
 
-    # Steps represent a sequence of tasks that will be executed as part of the job
     steps:
-      # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
-      - uses: actions/checkout@v4
+      - name: Checkout do código
+        uses: actions/checkout@v4
 
-      # Runs a set of commands using the runners shell
-      - name: Run a multi-line script
+      - name: Configurar ambiente Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.10'
+
+      - name: Instalar dependências
+        run: |
+          cd /home/dennis/super-duper-octo-broccoli
+          pip install -r requirements.txt
+
+      - name: Executar testes com pytest
+        run: |
+          cd /home/dennis/super-duper-octo-broccoli
+          pytest
+
+  deploy:
+    name: Deploy da aplicação
+    runs-on: self-hosted
+    needs: test
+
+    steps:
+      - name: Checkout do código
+        uses: actions/checkout@v4
+
+      - name: Realizar deploy
         run: |
           cd /home/dennis/super-duper-octo-broccoli
           git pull
